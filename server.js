@@ -37,66 +37,19 @@ function handleRequest(request, response){
 					if (chunk) {
 						payload += chunk;
 					}
-					var now = true;
-					switch (action) { // API Routing...
-						case 'getUser':
-							var payloadObj = JSON.parse(payload);
-							var retId = apiInst.setMongoData('getUserData', payloadObj);
-							setInterval(function(){
-								var data = apiInst.getMongoData(retId);
-								if (data !== false) {
-								    response.write(JSON.stringify(data));
-									response.end();
-								}
-							}, 10);
-
-						break;
-						case 'updateUser':
-							var payloadObj = JSON.parse(payload);
-							var retId = apiInst.setMongoData('updateUserData', payloadObj);
-							setInterval(function(){
-								var data = apiInst.getMongoData(retId);
-								if (data !== false) {
-								    response.write(JSON.stringify(data));
-									response.end();
-								}
-							}, 10);
-						break;
-						case 'addUser':
-							var payloadObj = JSON.parse(payload);
-							var retId = apiInst.setMongoData('insertUserData', payloadObj);
-							setInterval(function(){
-								var data = apiInst.getMongoData(retId);
-								if (data !== false) {
-								    response.write(JSON.stringify(data));
-									response.end();
-								}
-							}, 10);
-						break;
-						case 'deleteUser':
-							var payloadObj = JSON.parse(payload);
-							var retId = apiInst.setMongoData('deleteUserData', payloadObj);
-							setInterval(function(){
-								var data = apiInst.getMongoData(retId);
-								if (data !== false) {
-								    response.write(JSON.stringify(data));
-									response.end();
-								}
-							}, 10);
-						break;
-						case 'getData':
-							var retId = apiInst.setMongoData('getUsersData', {});
-							setInterval(function(){
-								var data = apiInst.getMongoData(retId);
-								if (data !== false) {
-								    response.write(JSON.stringify(data));
-									response.end();
-								}
-							}, 10);
-						break;
-						default:
-							var data = {'Error' : 'No action defined'};
+					try {
+						var payloadObj = JSON.parse(payload);
+					} catch (e) {
+						var payloadObj = {};
 					}
+					var retId = apiInst.setMongoData(action, payloadObj);
+					setInterval(function(){
+						var data = apiInst.getMongoData(retId);
+						if (data !== false) {
+						   	response.write(JSON.stringify(data));
+							response.end();
+						}
+					}, 10);
 				});
 			} else {
 				response.writeHeader(200, {"Content-Type": "application/json"});
